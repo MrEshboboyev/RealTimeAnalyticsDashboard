@@ -31,6 +31,12 @@ public class AuthService(UserManager<AppUser> userManager,
                 lockoutOnFailure: true // Enabling lockout on failure
             );
 
+            if (result.IsLockedOut)
+                throw new Exception("Your account is locked due to multiple unsuccessful login attempts. Please try again later.");
+
+            if (!result.Succeeded)
+                throw new Exception("Username/Password is incorrect!");
+
             // Fetch user roles
             var userRoles = await _userManager.GetRolesAsync(userFromDb);
 

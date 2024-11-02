@@ -6,6 +6,7 @@ using RealTimeAnalyticsDashboard.Application.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using RealTimeAnalyticsDashboard.Application.Common.Utility;
 
 namespace RealTimeAnalyticsDashboard.Infrastructure.Implementations;
 
@@ -26,16 +27,21 @@ public class JwtTokenGenerator(IOptions<JwtOptions> jwtOptions) : IJwtTokenGener
             new(JwtRegisteredClaimNames.Name, appUser.UserName!)
         };
 
+        // adding roles to claim List
         claimList.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var tokenDescriptor = new SecurityTokenDescriptor()
+        // signing credentials
+        var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(key), 
+            SecurityAlgorithms.HmacSha256Signature);
+
+        var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Audience = _jwtOptions.Audience,
+            IssuedAt = DateTime.UtcNow,
             Issuer = _jwtOptions.Issuer,
+            Audience = _jwtOptions.Audience,
+            Expires = DateTime.UtcNow.AddHours(SD.ExpirationTokenHours),
             Subject = new ClaimsIdentity(claimList),
-            Expires = DateTime.Now.AddDays(7),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = signingCredentials
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
