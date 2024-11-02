@@ -5,6 +5,7 @@ using RealTimeAnalyticsDashboard.Presentation.Services.IServices;
 using RealTimeAnalyticsDashboard.Presentation.Services;
 using RealTimeAnalyticsDashboard.Infrastructure.Services;
 using RealTimeAnalyticsDashboard.Application.Common.Models;
+using RealTimeAnalyticsDashboard.Application.Common.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.ExpireTimeSpan = TimeSpan.FromHours(10);
+        options.ExpireTimeSpan = TimeSpan.FromHours(SD.ExpirationTokenHours);
         options.LoginPath = "/Auth/Login";
         options.AccessDeniedPath = "/Auth/AccessDenied";
     });
