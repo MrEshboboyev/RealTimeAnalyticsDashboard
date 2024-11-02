@@ -10,6 +10,7 @@ public class UnitOfWork(AppDbContext db) : IUnitOfWork
     public IMetricRepository Metric { get; private set; } = new MetricRepository(db);
     public ISessionRepository Session { get; private set; } = new SessionRepository(db);
     public IUserActivityRepository UserActivity { get; private set; } = new UserActivityRepository(db);
+    public IMetricHistoryRepository MetricHistory { get; private set; } = new MetricHistoryRepository(db);
 
     public async Task SaveAsync()
     {
