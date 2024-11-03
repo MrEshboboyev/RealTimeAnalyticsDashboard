@@ -1,0 +1,29 @@
+﻿@model IEnumerable<UserActivityDTO>
+
+<div class="container mt-5">
+    <h2 class="mb-4">My Activities</h2>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Activity Type</th>
+                <th>Timestamp</th>
+                <th>Session ID</th>
+            </tr>
+        </thead>
+        <tbody id="userActivityTableBody">
+            @foreach (var activity in Model)
+            {
+                <tr id="activityRow-@activity.Id">
+                    <td>@activity.ActivityType</td>
+                    <td>@activity.Timestamp.ToString("g")</td>
+                    <td>@activity.SessionId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/userActivityUpdates.js"></script>
+}
