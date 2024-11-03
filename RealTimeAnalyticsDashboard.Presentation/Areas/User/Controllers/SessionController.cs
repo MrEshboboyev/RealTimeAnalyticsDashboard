@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealTimeAnalyticsDashboard.Application.Common.Utility;
-using RealTimeAnalyticsDashboard.Application.DTOs;
 using RealTimeAnalyticsDashboard.Application.Services;
 using System.Security.Claims;
 

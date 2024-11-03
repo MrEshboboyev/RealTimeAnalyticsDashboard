@@ -35,7 +35,7 @@ public class SessionService(IUnitOfWork unitOfWork, IMapper mapper) :
         try
         {
             var allSessions = await _unitOfWork.Session.GetAllAsync(
-                includeProperties: "User,UserActivities");
+                includeProperties: "AppUser,UserActivities");
 
             var mappedSessions = _mapper.Map<IEnumerable<SessionDTO>>(allSessions);
 
@@ -89,7 +89,7 @@ public class SessionService(IUnitOfWork unitOfWork, IMapper mapper) :
     {
         try
         {
-            var sessionFromDb = await _unitOfWork.Session.GetAsync(a => a.Id == sessionId)
+            var sessionFromDb = await _unitOfWork.Session.GetAsync(a => a.Id == sessionId, tracked: true)
                 ?? throw new Exception("Session not found!");
 
             sessionFromDb.EndTime = DateTime.Now;
@@ -111,7 +111,7 @@ public class SessionService(IUnitOfWork unitOfWork, IMapper mapper) :
         {
             var userSessions = await _unitOfWork.Session.GetAllAsync(
                 filter: a => a.AppUserId == userId,
-                includeProperties: "UserDTO,UserActivityDTOs");
+                includeProperties: "AppUser,UserActivities");
 
             var mappedSessions = _mapper.Map<IEnumerable<SessionDTO>>(userSessions);
 
