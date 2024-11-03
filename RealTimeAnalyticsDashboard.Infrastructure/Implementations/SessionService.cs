@@ -1,14 +1,19 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using RealTimeAnalyticsDashboard.Application.Common.Interfaces;
 using RealTimeAnalyticsDashboard.Application.DTOs;
 using RealTimeAnalyticsDashboard.Application.Services;
 using RealTimeAnalyticsDashboard.Domain.Entities;
+using RealTimeAnalyticsDashboard.Infrastructure.RealTime;
 
 namespace RealTimeAnalyticsDashboard.Infrastructure.Implementations;
 
-public class SessionService(IUnitOfWork unitOfWork, IMapper mapper) :
+public class SessionService(IUnitOfWork unitOfWork, IMapper mapper,
+    IAnalyticsHubService analyticsHubService) :
     BaseService(unitOfWork, mapper), ISessionService
 {
+    private readonly IAnalyticsHubService _analyticsHubService = analyticsHubService;
+
     public async Task<ResponseDTO> GetSessionByIdAsync(int sessionId)
     {
         try
@@ -76,6 +81,16 @@ public class SessionService(IUnitOfWork unitOfWork, IMapper mapper) :
 
             await _unitOfWork.Session.AddAsync(sessionForDb);
             await _unitOfWork.SaveAsync();
+
+            #region Broadcast Session create
+            // Call SignalR to broadcast the session creation
+            var sessionForBroadcast = _mapper.Map<SessionDTO>(sessionForDb);
+            await _analyticsHubService.BroadcastSessionUpdateAsync(sessionForBroadcast);
+
+            _response.IsSuccess = true;
+            _response.Message = "Session created successfully.";
+            _response.Result = sessionForBroadcast;
+            #endregion
         }
         catch (Exception ex)
         {
@@ -96,6 +111,16 @@ public class SessionService(IUnitOfWork unitOfWork, IMapper mapper) :
 
             await _unitOfWork.Session.UpdateAsync(sessionFromDb);
             await _unitOfWork.SaveAsync();
+
+            #region Broadcast Session ended
+            // Call SignalR to broadcast the session creation
+            var sessionForBroadcast = _mapper.Map<SessionDTO>(sessionFromDb);
+            await _analyticsHubService.BroadcastSessionUpdateAsync(sessionForBroadcast);
+
+            _response.IsSuccess = true;
+            _response.Message = "Session created successfully.";
+            _response.Result = sessionForBroadcast;
+            #endregion
         }
         catch (Exception ex)
         {

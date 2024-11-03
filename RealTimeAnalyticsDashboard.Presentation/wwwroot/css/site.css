@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.highlight {
+    background-color: #fffae6; /* Light yellow background */
+    transition: background-color 0.5s ease;
+}
