@@ -26,6 +26,18 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if (User.IsInRole(SD.Role_Architect))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="@SD.Role_Architect" asp-controller="Session" asp-action="Index">All Sessions</a>
+                            </li>
+                        }
+                        @if (User.IsInRole(SD.Role_User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="@SD.Role_User" asp-controller="Session" asp-action="Index">My Sessions</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav">
                         @if (!User.Identity.IsAuthenticated)

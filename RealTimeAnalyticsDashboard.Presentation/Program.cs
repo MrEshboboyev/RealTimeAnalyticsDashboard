@@ -38,6 +38,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Auth/AccessDenied";
     });
 
+// Register SignalR
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 

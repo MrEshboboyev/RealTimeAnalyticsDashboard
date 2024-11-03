@@ -55,10 +55,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .HasColumnType("timestamp")
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+        // Remove the default value configuration for EndTime
         builder.Entity<Session>()
             .Property(s => s.EndTime)
-            .HasColumnType("timestamp")
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasColumnType("timestamp"); // Removed HasDefaultValueSql
 
         builder.Entity<UserActivity>()
             .Property(ua => ua.Timestamp)
@@ -66,4 +66,3 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }
-
