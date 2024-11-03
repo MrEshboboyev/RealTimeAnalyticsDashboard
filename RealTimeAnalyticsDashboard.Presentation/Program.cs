@@ -59,6 +59,11 @@ app.MapAreaControllerRoute(
     areaName: "Architect",
     pattern: "Architect/{controller=Session}/{action=Index}");
 
+app.MapAreaControllerRoute(
+    name: "MyAreaUser",
+    areaName: "User",
+    pattern: "User/{controller=Session}/{action=Index}");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

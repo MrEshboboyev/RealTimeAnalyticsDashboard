@@ -1,0 +1,22 @@
+﻿@model SessionDTO
+
+@{
+    ViewData["Title"] = $"Session Details - {Model.Id}";
+}
+
+<div class="container mt-5">
+    <h2>Session Details</h2>
+    <p><strong>Session ID:</strong> @Model.Id</p>
+    <p><strong>Start Time:</strong> @Model.StartTime.ToString("g")</p>
+    <p><strong>End Time:</strong> @(Model.EndTime?.ToString("g") ?? "Ongoing")</p>
+
+    <h3>Activities</h3>
+    <ul>
+        @foreach (var activity in Model.UserActivityDTOs)
+        {
+            <li>@activity.ActivityType - @activity.Timestamp.ToString("g")</li>
+        }
+    </ul>
+
+    <a asp-action="Index" class="btn btn-secondary">Back to My Sessions</a>
+</div>
