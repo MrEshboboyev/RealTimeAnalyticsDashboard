@@ -6,6 +6,7 @@ using RealTimeAnalyticsDashboard.Presentation.Services;
 using RealTimeAnalyticsDashboard.Infrastructure.Services;
 using RealTimeAnalyticsDashboard.Application.Common.Models;
 using RealTimeAnalyticsDashboard.Application.Common.Utility;
+using RealTimeAnalyticsDashboard.Infrastructure.RealTime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,5 +57,9 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Hub
+app.MapHub<AnalyticsHub>("/analyticsHub");
+
 await app.SeedDatabaseAsync();
 app.Run();
