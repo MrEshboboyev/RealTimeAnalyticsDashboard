@@ -9,11 +9,15 @@ namespace RealTimeAnalyticsDashboard.Infrastructure.Implementations;
 
 public class AuthService(UserManager<AppUser> userManager,
     SignInManager<AppUser> signInManager,
-    IJwtTokenGenerator jwtTokenGenerator) : IAuthService
+    IJwtTokenGenerator jwtTokenGenerator,
+    ISessionService sessionService,
+    IAnalyticsHubService analyticsHubService) : IAuthService
 {
     private readonly UserManager<AppUser> _userManager = userManager;
     private readonly SignInManager<AppUser> _signInManager = signInManager;
     private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
+    private readonly ISessionService _sessionService = sessionService;
+    private readonly IAnalyticsHubService _analyticsHubService = analyticsHubService;
     protected ResponseDTO _response = new();
 
     public async Task<ResponseDTO> LoginAsync(LoginModel loginModel)
@@ -44,6 +48,20 @@ public class AuthService(UserManager<AppUser> userManager,
             var generatedToken = _jwtTokenGenerator.GenerateToken(userFromDb, userRoles);
 
             _response.Result = generatedToken;
+
+            #region Create and Broadcast new Session
+            // create a new session
+            SessionDTO sessionDTO = new()
+            {
+                AppUserId = userFromDb.Id,
+                StartTime = DateTime.Now
+            };
+
+            await _sessionService.CreateSessionAsync(sessionDTO);
+            
+            // Broadcast the new session to admins in real-time
+            await _analyticsHubService.BroadcastSessionUpdateAsync(sessionDTO);
+            #endregion
         }
         catch (Exception ex)
         {

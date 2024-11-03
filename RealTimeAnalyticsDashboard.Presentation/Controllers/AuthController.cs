@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RealTimeAnalyticsDashboard.Application.Common.Models;
+using RealTimeAnalyticsDashboard.Application.DTOs;
 using RealTimeAnalyticsDashboard.Application.Services;
 using RealTimeAnalyticsDashboard.Domain.Entities;
 using RealTimeAnalyticsDashboard.Presentation.Services.IServices;
@@ -13,11 +14,13 @@ namespace RealTimeAnalyticsDashboard.Presentation.Controllers;
 
 public class AuthController(IAuthService authService, 
     ITokenProvider tokenProvider,
-    SignInManager<AppUser> signInManager) : Controller
+    SignInManager<AppUser> signInManager,
+    ISessionService sessionService) : Controller
 {
     private readonly IAuthService _authService = authService;
     private readonly ITokenProvider _tokenProvider = tokenProvider;
     private readonly SignInManager<AppUser> _signInManager = signInManager;
+    private readonly ISessionService _sessionService = sessionService;
 
     [HttpGet]
     public IActionResult Login() => View();
@@ -74,6 +77,12 @@ public class AuthController(IAuthService authService,
     {
         try
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _sessionService.GetActiveSessionByUserIdAsync(userId);
+            if (!response.IsSuccess)
+                throw new Exception(response.Message);
+
+            await _sessionService.EndSessionAsync(((SessionDTO)response.Result).Id);
             await _signInManager.SignOutAsync();
             _tokenProvider.ClearToken();
         }

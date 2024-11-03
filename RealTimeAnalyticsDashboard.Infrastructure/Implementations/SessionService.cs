@@ -49,6 +49,25 @@ public class SessionService(IUnitOfWork unitOfWork, IMapper mapper) :
 
         return _response;
     }
+    public async Task<ResponseDTO> GetActiveSessionByUserIdAsync(string userId)
+    {
+        try
+        {
+            var session = await _unitOfWork.Session.GetLatestSessionByUserIdAsync(userId)
+                ?? throw new Exception("Latest Session not found!");
+
+            var mappedSession = _mapper.Map<SessionDTO>(session);
+
+            _response.Result = mappedSession;
+        }
+        catch (Exception ex)
+        {
+            _response.IsSuccess = false;
+            _response.Message = ex.Message;
+        }
+
+        return _response;
+    }
     public async Task<ResponseDTO> CreateSessionAsync(SessionDTO sessionDTO)
     {
         try
