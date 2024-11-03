@@ -3,12 +3,16 @@ using RealTimeAnalyticsDashboard.Application.Common.Interfaces;
 using RealTimeAnalyticsDashboard.Application.DTOs;
 using RealTimeAnalyticsDashboard.Application.Services;
 using RealTimeAnalyticsDashboard.Domain.Entities;
+using RealTimeAnalyticsDashboard.Infrastructure.RealTime;
 
 namespace RealTimeAnalyticsDashboard.Infrastructure.Implementations;
 
-public class UserActivityService(IUnitOfWork unitOfWork, IMapper mapper) :
+public class UserActivityService(IUnitOfWork unitOfWork, IMapper mapper,
+    IAnalyticsHubService analyticsHubService) :
     BaseService(unitOfWork, mapper), IUserActivityService
 {
+    private readonly IAnalyticsHubService _analyticsHubService = analyticsHubService;
+
     public async Task<ResponseDTO> GetActivityByIdAsync(int activityId)
     {
         try
@@ -54,9 +58,22 @@ public class UserActivityService(IUnitOfWork unitOfWork, IMapper mapper) :
         try
         {
             var activityForDb = _mapper.Map<UserActivity>(userActivityDTO);
-
+            
             await _unitOfWork.UserActivity.AddAsync(activityForDb);
             await _unitOfWork.SaveAsync();
+
+            #region Broadcast Activity Create
+            // Map saved entity to DTO to return and broadcast
+            var mappedActivity = _mapper.Map<UserActivityDTO>(activityForDb);
+
+            // Broadcast the new activity to all clients via SignalR
+            await _analyticsHubService.BroadcastUserActivityUpdateAsync(mappedActivity);
+
+            // Update the response with success
+            _response.IsSuccess = true;
+            _response.Result = mappedActivity;
+            _response.Message = "User activity created and broadcasted successfully.";
+            #endregion
         }
         catch (Exception ex)
         {

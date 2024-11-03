@@ -31,11 +31,17 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="@SD.Role_Architect" asp-controller="Session" asp-action="Index">All Sessions</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="@SD.Role_Architect" asp-controller="UserActivity" asp-action="Index">All User Activities</a>
+                            </li>
                         }
                         @if (User.IsInRole(SD.Role_User))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="@SD.Role_User" asp-controller="Session" asp-action="Index">My Sessions</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="@SD.Role_User" asp-controller="UserActivity" asp-action="MyActivities">My Activities</a>
                             </li>
                         }
                     </ul>
@@ -78,6 +84,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/activityTracker.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js" integrity="sha512-7SRCYIJtR6F8ocwW7UxW6wGKqbSyqREDbfCORCbGLatU0iugBLwyOXpzhkPyHIFdBO0K2VCu57fvP2Twgx1o2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     @await RenderSectionAsync("Scripts", required: false)

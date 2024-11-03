@@ -4,6 +4,9 @@
     ViewData["Title"] = $"Session Details - {Model.Id}";
 }
 
+<!-- Include session ID in a hidden element or script tag -->
+<input type="hidden" id="sessionId" value="@Model.Id" />
+
 <div class="container mt-5">
     <h2>Session Details</h2>
     <p><strong>Session ID:</strong> @Model.Id</p>
@@ -20,3 +23,11 @@
 
     <a asp-action="Index" class="btn btn-secondary">Back to My Sessions</a>
 </div>
+
+@section Scripts {
+    <script>
+        // Pass the session ID to the JavaScript file
+        const sessionId = document.getElementById("sessionId").value;
+        trackUserActivity('PageView', sessionId);  // Track initial page view
+    </script>
+}
