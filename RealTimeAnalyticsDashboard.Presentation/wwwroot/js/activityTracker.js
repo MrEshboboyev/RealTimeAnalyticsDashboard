@@ -6,17 +6,27 @@ function trackUserActivity(activityType) {
         return;
     }
 
-    fetch('/User/UserActivity/Create', {
+    // Logging
+    const requestBody = {
+        activityType: activityType
+    };
+    console.log("Sending activity data:", JSON.stringify(requestBody)); // Log the exact payload
+
+    fetch(`/User/UserActivity/Create/${sessionId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            activityType: activityType,
-            sessionId: sessionId
+            activityType: activityType
         })
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => console.log('Activity tracked:', data))
         .catch(error => console.error('Error tracking activity:', error));
 }

@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using RealTimeAnalyticsDashboard.Application.Common.Utility;
 using RealTimeAnalyticsDashboard.Application.DTOs;
 using RealTimeAnalyticsDashboard.Application.Services;
-using RealTimeAnalyticsDashboard.Infrastructure.Implementations;
+using RealTimeAnalyticsDashboard.Domain.Enums;
 using System.Security.Claims;
 
 namespace RealTimeAnalyticsDashboard.Presentation.Areas.User.Controllers;
 
 [Area(SD.Role_User)]
 [Authorize]
+[Route("User/[controller]")]
 public class UserActivityController(IUserActivityService userActivityService) : Controller
 {
     private readonly IUserActivityService _userActivityService = userActivityService;
@@ -28,9 +29,17 @@ public class UserActivityController(IUserActivityService userActivityService) : 
         return RedirectToAction("Index", "Home");
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create(UserActivityDTO userActivityDTO)
+    [HttpPost("Create/{sessionId}")]
+    public async Task<IActionResult> Create([FromBody] ActivityType activityType, int sessionId)
     {
+        // Create the UserActivityDTO
+        var userActivityDTO = new UserActivityDTO
+        {
+            ActivityType = activityType,
+            SessionId = sessionId,
+            Timestamp = DateTime.Now
+        };
+
         // Create the activity using the service
         var response = await _userActivityService.CreateActivityAsync(userActivityDTO);
 
@@ -41,5 +50,4 @@ public class UserActivityController(IUserActivityService userActivityService) : 
         TempData["error"] = response.Message;
         return BadRequest(response);
     }
-
 }
