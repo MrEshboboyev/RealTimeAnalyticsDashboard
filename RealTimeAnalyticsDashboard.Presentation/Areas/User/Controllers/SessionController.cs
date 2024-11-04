@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealTimeAnalyticsDashboard.Application.Common.Utility;
+using RealTimeAnalyticsDashboard.Application.DTOs;
 using RealTimeAnalyticsDashboard.Application.Services;
 using System.Security.Claims;
 
@@ -35,5 +36,21 @@ public class SessionController(ISessionService sessionService) : Controller
 
         TempData["error"] = response.Message;
         return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    [Route("api/user/session")]
+    public async Task<IActionResult> GetUserSessionId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        // Retrieve the active session ID for the user
+        var response = await _sessionService.GetActiveSessionByUserIdAsync(userId);
+        if (response.Result == null)
+        {
+            return NotFound(new { message = "No active session found." });
+        }
+
+        return Ok(new { sessionId = ((SessionDTO)response.Result).Id });
     }
 }

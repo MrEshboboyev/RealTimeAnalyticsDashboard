@@ -1,4 +1,11 @@
-﻿function trackUserActivity(activityType, sessionId) {
+﻿let sessionId = null;
+
+function trackUserActivity(activityType) {
+    if (!sessionId) {
+        console.warn("Session ID is missing. Activity tracking is disabled.");
+        return;
+    }
+
     fetch('/User/UserActivity/Create', {
         method: 'POST',
         headers: {
@@ -14,13 +21,22 @@
         .catch(error => console.error('Error tracking activity:', error));
 }
 
-// Example usage for different activity types
+// Fetch the session ID when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Track a page view
-    trackUserActivity('PageView', sessionId);  // Replace `sessionId` with the actual ID
+    fetch('/api/user/session')
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("No active session found or user not authenticated.");
+            }
+        })
+        .then(data => {
+            sessionId = data.sessionId;
+            console.log("Session ID retrieved:", sessionId);
 
-    // Track a click on a specific button
-    document.getElementById('someButton').addEventListener('click', () => {
-        trackUserActivity('Click', sessionId);  // Replace `sessionId` with the actual ID
-    });
+            // Example: Track an initial page view
+            trackUserActivity('PageView');
+        })
+        .catch(error => console.warn(error.message));
 });
