@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace RealTimeAnalyticsDashboard.Presentation.Areas.User.Controllers;
 
 [Area(SD.Role_User)]
-[Authorize(Roles = SD.Role_User)]
+[Authorize]
 public class SessionController(ISessionService sessionService) : Controller
 {
     private readonly ISessionService _sessionService = sessionService;
